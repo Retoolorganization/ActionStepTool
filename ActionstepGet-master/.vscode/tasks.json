@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build ActionstepGet (Debug)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"${workspaceFolder}\\ActionstepGet.csproj",
+				"--configuration",
+				"Debug"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "Run ActionstepGet (Debug)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"D:\\Action step\\ActionstepGet-master\\ActionstepGet-master\\ActionstepGet.csproj",
+				"--configuration",
+				"Debug"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

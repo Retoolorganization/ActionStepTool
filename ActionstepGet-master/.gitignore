@@ -1,0 +1,5 @@
+bin/
+obj/
+.vs/
+appsettings.actionstep.json
+*.auth.dat
