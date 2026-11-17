@@ -13,7 +13,7 @@ The credential keys are unchanged: `Actionstep:Staging:ClientId`, `Actionstep:St
 
 ## Requests
 
-Choose **GET** or **POST**, then enter an Actionstep REST path. Either of these endpoint forms is accepted:
+Choose **GET**, **POST**, or **PUT**, then enter an Actionstep REST path. Either of these endpoint forms is accepted:
 
 ```text
 GET /api/rest/actionparticipants?participant=12345&include=action,participantType&pageSize=200&page=1
@@ -22,7 +22,7 @@ actionparticipants?participant=12345&include=action,participantType&pageSize=200
 
 Full HTTPS REST URLs are also accepted when they belong to the signed-in API endpoint. Encode spaces in query values as `%20` or `+`.
 
-For POST, enter valid JSON in the request-body field. The request uses the `application/vnd.api+json` content type; shape the body and endpoint according to the Actionstep API resource you are creating.
+For POST or PUT, enter valid JSON in the request-body field. The request uses the `application/vnd.api+json` content type required by the Actionstep REST API; shape the body and endpoint according to the Actionstep API resource you are creating.
 
 JSON shows the response body as received for a single request. YAML converts that JSON for display; string values stay strings, including dates, numeric-looking IDs, and empty strings. Copy uses the currently displayed representation. Non-JSON responses remain visible as received, with a notice if YAML conversion fails.
 
@@ -55,6 +55,6 @@ Keep the copied JSON configuration files alongside the published executable.
 
 ## Validation status
 
-Build the project with the .NET 8 SDK on Windows. Live Actionstep login and GET/POST requests require valid environment configuration and have not been tested against an Actionstep account.
+Build the project with the .NET 8 SDK on Windows. Live Actionstep login and GET/POST/PUT requests require valid environment configuration and have not been tested against an Actionstep account.
 
-Before sending a POST, confirm the selected environment in the header and verify the endpoint and JSON body. POST is a write operation and may create or modify records.
+Before sending a POST or PUT, confirm the selected environment in the header and verify the endpoint and JSON body. These are write operations and may create or modify records.

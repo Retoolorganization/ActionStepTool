@@ -149,8 +149,9 @@ public sealed class ActionstepClient : IDisposable
         {
             req.Content = new StringContent(
                 body,
-                Encoding.UTF8,
-                "application/vnd.api+json");
+                Encoding.UTF8);
+            req.Content.Headers.ContentType =
+                new MediaTypeHeaderValue("application/vnd.api+json");
         }
 
         return req;
@@ -165,7 +166,8 @@ public sealed class ActionstepClient : IDisposable
     {
         var text = input.Trim();
         if (text.StartsWith("GET ", StringComparison.OrdinalIgnoreCase) ||
-            text.StartsWith("POST ", StringComparison.OrdinalIgnoreCase))
+            text.StartsWith("POST ", StringComparison.OrdinalIgnoreCase) ||
+            text.StartsWith("PUT ", StringComparison.OrdinalIgnoreCase))
         {
             text = text[(text.IndexOf(' ') + 1)..].Trim();
         }
@@ -212,6 +214,21 @@ public sealed class ActionstepClient : IDisposable
     {
         using var req = await BuildRequestAsync(
             HttpMethod.Post,
+            pathAndQuery,
+            body,
+            ct);
+        using var res = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);
+        var responseBody = await res.Content.ReadAsStringAsync(ct);
+        return new GetResponse((int)res.StatusCode, res.ReasonPhrase ?? "", responseBody);
+    }
+
+    public async Task<GetResponse> PutAsync(
+        string pathAndQuery,
+        string body,
+        CancellationToken ct)
+    {
+        using var req = await BuildRequestAsync(
+            HttpMethod.Put,
             pathAndQuery,
             body,
             ct);

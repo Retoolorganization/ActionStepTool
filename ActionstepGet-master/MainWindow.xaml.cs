@@ -77,14 +77,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public string Endpoint { get; set; } =
         "/api/rest/actions?pageSize=200&page=1";
 
-    public string[] RequestMethods { get; } = { "GET", "POST" };
+    public string[] RequestMethods { get; } = { "GET", "POST", "PUT" };
 
     public string RequestMethod
     {
         get => _requestMethod;
         set
         {
-            if (value is not ("GET" or "POST") ||
+            if (value is not ("GET" or "POST" or "PUT") ||
                 value == _requestMethod)
             {
                 return;
@@ -92,7 +92,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             _requestMethod = value;
             Changed();
-            Changed(nameof(IsPostRequest));
+            Changed(nameof(IsWriteRequest));
             Changed(nameof(CanFetchAllPages));
         }
     }
@@ -103,7 +103,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         set => _requestBody = value;
     }
 
-    public bool IsPostRequest => RequestMethod == "POST";
+    public bool IsWriteRequest => RequestMethod is "POST" or "PUT";
     public bool CanFetchAllPages => IsIdle && RequestMethod == "GET";
 
     public bool FetchAllPages { get; set; }
@@ -421,19 +421,26 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var uri = _client.ResolveRequestUri(
                 Endpoint.Replace("\r", "").Replace("\n", ""));
 
-            if (RequestMethod == "POST")
+            if (IsWriteRequest)
             {
                 using var document = JsonDocument.Parse(RequestBody);
-                StatusText = "Posting data...";
-                var response = await _client.PostAsync(
-                    uri.AbsoluteUri,
-                    RequestBody,
-                    operation.Token);
+                StatusText = $"Sending {RequestMethod} request...";
+                var response = RequestMethod == "PUT"
+                    ? await _client.PutAsync(
+                        uri.AbsoluteUri,
+                        RequestBody,
+                        operation.Token)
+                    : await _client.PostAsync(
+                        uri.AbsoluteUri,
+                        RequestBody,
+                        operation.Token);
                 pages.Add(response);
 
                 StatusText =
                     $"HTTP {response.StatusCode} {response.Reason}. " +
-                    (response.IsSuccess ? "POST completed." : "POST failed.");
+                    (response.IsSuccess
+                        ? $"{RequestMethod} completed."
+                        : $"{RequestMethod} failed.");
             }
             else
             {
